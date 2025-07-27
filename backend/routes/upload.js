@@ -1,31 +1,51 @@
-const express = require("express");
-const multer = require("multer");
+// upload.js
+import express from "express";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import pdfParse from "pdf-parse";
+import { summarizeText } from "../server/utils/summarizeWithGemini.js";
+
 const router = express.Router();
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+// === Multer Config ===
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = "uploads";
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    const timestamp = Date.now();
+    const unique = `${timestamp}-${Math.round(Math.random() * 1e9)}`;
+    const ext = path.extname(file.originalname);
+    cb(null, `file-${unique}${ext}`);
+  },
+});
+const upload = multer({ storage });
 
+// === POST /upload ===
 router.post("/", upload.single("file"), async (req, res) => {
   try {
-    const fileBuffer = req.file.buffer;
-    const fileName = req.file.originalname;
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded." });
+    }
 
-    // Optional: Convert buffer to string if it's a text file
-    const fileContent = fileBuffer.toString("utf-8");
+    const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+    const dataBuffer = fs.readFileSync(req.file.path);
+    const pdfData = await pdfParse(dataBuffer);
 
-    // TODO: Connect this to Gemini API later
-    console.log("Received file:", fileName);
-    console.log("Content preview:", fileContent.slice(0, 100)); // Preview only
+    const summary = await summarizeText(pdfData.text);
 
-    res.json({
-      message: "File received!",
-      filename: fileName,
-      contentSnippet: fileContent.slice(0, 300),
-    });
+    rres.json({
+       message: "File uploaded and summarized successfully!",
+        fileUrl,
+        summary,   
+   });
   } catch (error) {
-    console.error("Upload failed", error);
-    res.status(500).json({ error: "Failed to upload file" });
+    console.error("Upload/summarize error:", error.message);
+    res.status(500).json({ error: "Something went wrong during processing." });
   }
 });
 
-module.exports = router;
+export default router;
