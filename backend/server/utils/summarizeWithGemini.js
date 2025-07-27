@@ -21,3 +21,23 @@ export const summarizeText = async (text) => {
     throw new Error("Failed to summarize text with Gemini.");
   }
 };
+export const generateFlashcardsFromText = async (summaryText) => {
+  try {
+    const prompt = `
+    Turn the following summary into a list of flashcards.
+    Each flashcard should be in the format:
+    Q: [Question]
+    A: [Answer]
+
+    Here's the summary:
+    ${summaryText}
+    `;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    return response.text(); // we'll parse it in frontend if needed
+  } catch (error) {
+    console.error("Gemini flashcard generation failed:", error);
+    throw new Error("Failed to generate flashcards.");
+  }
+};

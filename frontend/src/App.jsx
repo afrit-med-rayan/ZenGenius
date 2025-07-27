@@ -3,8 +3,9 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import PrivateRoute from "./components/Auth/PrivateRoute";
 import Study from "./pages/Study";
-const Dashboard = () => <h1>📊 Dashboard (Coming Soon)</h1>;
-const Profile = () => <h1>👤 Profile (Coming Soon)</h1>;
+import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
+
 
 function App() {
   return (

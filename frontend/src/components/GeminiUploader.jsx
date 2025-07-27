@@ -12,8 +12,56 @@ import {
   useToast,
   Spinner,
   Divider,
+  SimpleGrid,
 } from "@chakra-ui/react";
-import { FaFilePdf, FaCheckCircle, FaCloudUploadAlt, FaExternalLinkAlt } from "react-icons/fa";
+import {
+  FaFilePdf,
+  FaCheckCircle,
+  FaCloudUploadAlt,
+  FaExternalLinkAlt,
+} from "react-icons/fa";
+
+// 🔁 Flashcard Component
+const FlashCard = ({ question, answer }) => {
+  const [flipped, setFlipped] = useState(false);
+
+  return (
+    <Box
+      onClick={() => setFlipped(!flipped)}
+      cursor="pointer"
+      bg="white"
+      borderRadius="xl"
+      boxShadow="lg"
+      p={6}
+      minH="120px"
+      textAlign="center"
+      transition="0.3s ease"
+      _hover={{ boxShadow: "xl" }}
+    >
+      <Text fontWeight="semibold" color="gray.800">
+        {flipped ? answer : question}
+      </Text>
+    </Box>
+  );
+};
+
+// 🔁 Converts Gemini output string into flashcard objects
+const parseFlashcards = (raw) => {
+  const lines = raw.split("\n").filter((line) => line.trim() !== "");
+  const flashcards = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].startsWith("Q:") && lines[i + 1]?.startsWith("A:")) {
+      flashcards.push({
+        question: lines[i].replace("Q:", "").trim(),
+        answer: lines[i + 1].replace("A:", "").trim(),
+      });
+      i++; // Skip next line since we already used it
+    }
+  }
+
+  return flashcards;
+};
 
 const GeminiUploader = () => {
   const [file, setFile] = useState(null);
@@ -146,7 +194,6 @@ const GeminiUploader = () => {
             maxH="400px"
             overflowY="auto"
           >
-            {/* Remove ugly markdown-style formatting */}
             {response.summary.replace(/\*{1,2}/g, "")}
           </Box>
 
@@ -176,6 +223,28 @@ const GeminiUploader = () => {
                 />
               </Box>
             </>
+          )}
+
+          {/* 🧠 Flashcards */}
+          {response?.flashcards && (
+            <Box
+              mt={10}
+              p={6}
+              bg="gray.100"
+              borderRadius="xl"
+              border="1px solid"
+              borderColor="gray.300"
+            >
+              <Heading size="md" mb={4} color="purple.600">
+                🧠 Flashcards (Click to Flip)
+              </Heading>
+
+              <SimpleGrid columns={[1, 2, 3]} spacing={4}>
+                {parseFlashcards(response.flashcards).map((fc, idx) => (
+                  <FlashCard key={idx} question={fc.question} answer={fc.answer} />
+                ))}
+              </SimpleGrid>
+            </Box>
           )}
         </Box>
       )}
