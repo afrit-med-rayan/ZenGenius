@@ -37,46 +37,50 @@ const FlashCard = ({ question, answer }) => {
       minH="140px"
       textAlign="center"
       transition="all 0.3s ease"
-      transform={flipped ? "rotateY(180deg)" : "rotateY(0deg)"}
-      transformStyle="preserve-3d"
       border="2px solid"
-      borderColor={flipped ? "purple.200" : "gray.200"}
+      borderColor={flipped ? "purple.200" : "teal.200"}
       _hover={{ 
         boxShadow: "2xl", 
-        transform: flipped ? "rotateY(180deg) translateY(-4px)" : "translateY(-4px)",
+        transform: "translateY(-4px)",
         borderColor: flipped ? "purple.300" : "teal.300"
       }}
       position="relative"
       overflow="hidden"
+      bg={flipped ? "purple.50" : "teal.50"}
     >
       {/* Card indicator */}
       <Box
         position="absolute"
-        top="2"
-        right="2"
-        w="8px"
-        h="8px"
+        top="3"
+        right="3"
+        w="10px"
+        h="10px"
         borderRadius="full"
         bg={flipped ? "purple.400" : "teal.400"}
         transition="all 0.3s ease"
       />
       
       {/* Question/Answer content */}
-      <VStack spacing={3} justify="center" h="full">
-        <Text 
-          fontSize="xs" 
-          color={flipped ? "purple.500" : "teal.500"} 
-          fontWeight="bold" 
+      <VStack spacing={4} justify="center" h="full">
+        <Badge 
+          colorScheme={flipped ? "purple" : "teal"}
+          fontSize="xs"
+          px={3}
+          py={1}
+          borderRadius="full"
           textTransform="uppercase"
           letterSpacing="wide"
         >
           {flipped ? "Answer" : "Question"}
-        </Text>
+        </Badge>
+        
         <Text 
           fontWeight="semibold" 
           color="gray.800"
           fontSize="sm"
-          lineHeight="1.4"
+          lineHeight="1.5"
+          opacity={flipped ? 1 : 1}
+          transition="opacity 0.2s ease"
         >
           {flipped ? answer : question}
         </Text>
@@ -85,14 +89,15 @@ const FlashCard = ({ question, answer }) => {
       {/* Click hint */}
       <Text 
         position="absolute"
-        bottom="2"
+        bottom="3"
         left="50%"
         transform="translateX(-50%)"
         fontSize="xs"
-        color="gray.400"
+        color="gray.500"
         fontStyle="italic"
+        opacity="0.7"
       >
-        Click to {flipped ? "flip back" : "reveal"}
+        Click to {flipped ? "show question" : "reveal answer"}
       </Text>
     </Box>
   );
