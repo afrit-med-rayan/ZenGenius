@@ -16,6 +16,7 @@ import {
 } from "@chakra-ui/react";
 import AppNavbar from "../components/Common/AppNavbar";
 import GeminiUploader from "../components/GeminiUploader";
+import FocusTracker from "../components/FocusTracker";
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 
@@ -105,31 +106,30 @@ const Study = () => {
             ))}
           </HStack>
 
-          <Text mb={2}>How focused are you?</Text>
-          <Slider
-            aria-label="focus-slider"
-            defaultValue={5}
-            min={0}
-            max={10}
-            step={1}
-            value={focus}
-            onChange={(val) => setFocus(val)}
-            mb={6}
-          >
-            <SliderTrack>
-              <SliderFilledTrack bg="teal.400" />
-            </SliderTrack>
-            <SliderThumb boxSize={6} />
-          </Slider>
+          <FocusTracker 
+            focus={focus} 
+            setFocus={setFocus}
+            onFocusChange={(level) => {
+              // Optional: Add analytics or additional logic here
+              console.log(`Focus level changed to: ${level}`);
+            }}
+          />
 
           <Button
             colorScheme="teal"
             isLoading={isSubmitting}
             onClick={handleSubmit}
-            isDisabled={!mood}
+            isDisabled={!mood || focus < 3}
+            size="lg"
           >
-            Save Session
+            {focus < 3 ? "Focus Too Low - Take a Break" : "Save Session & Continue"}
           </Button>
+          
+          {focus < 3 && (
+            <Text fontSize="sm" color="red.500" textAlign="center">
+              💡 Tip: A focus level of at least 3/10 is recommended for effective studying
+            </Text>
+          )}
         </Box>
 
         {/* === Gemini Uploader === */}

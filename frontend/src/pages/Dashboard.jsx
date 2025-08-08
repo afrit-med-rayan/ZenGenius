@@ -13,6 +13,7 @@ import {
   CardBody,
 } from "@chakra-ui/react";
 import AppNavbar from "../components/Common/AppNavbar";
+import FocusAnalytics from "../components/FocusAnalytics";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -50,34 +51,43 @@ const Dashboard = () => {
         {loading ? (
           <Spinner size="xl" />
         ) : (
-          <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={8}>
-            {sessions.map((session) => (
-              <Card
-                key={session._id}
-                borderWidth="1px"
-                borderRadius="lg"
-                boxShadow="md"
-                p={4}
-              >
-                <CardHeader>
-                  <Heading size="md">{session.fileName || "Untitled"}</Heading>
-                  <Text fontSize="sm" color="gray.500">
-                    {new Date(session.date).toLocaleDateString()}
-                  </Text>
-                </CardHeader>
+          <VStack spacing={8}>
+            {/* Focus Analytics */}
+            <FocusAnalytics sessions={sessions} />
+            
+            {/* Study Sessions */}
+            <Box w="full">
+              <Heading size="lg" mb={6} color="teal.600">📚 Recent Study Sessions</Heading>
+              <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={8}>
+                {sessions.map((session) => (
+                  <Card
+                    key={session._id}
+                    borderWidth="1px"
+                    borderRadius="lg"
+                    boxShadow="md"
+                    p={4}
+                  >
+                    <CardHeader>
+                      <Heading size="md">{session.fileName || "Untitled"}</Heading>
+                      <Text fontSize="sm" color="gray.500">
+                        {new Date(session.date).toLocaleDateString()}
+                      </Text>
+                    </CardHeader>
 
-                <CardBody>
-                  <VStack align="start" spacing={2}>
-                    <Text><strong>Mood:</strong> {session.mood || "N/A"}</Text>
-                    <Text><strong>Focus:</strong> {session.focus || 0}/10</Text>
-                    <Text noOfLines={6}>
-                      <strong>Summary:</strong> {session.summary || "No summary available."}
-                    </Text>
-                  </VStack>
-                </CardBody>
-              </Card>
-            ))}
-          </SimpleGrid>
+                    <CardBody>
+                      <VStack align="start" spacing={2}>
+                        <Text><strong>Mood:</strong> {session.mood || "N/A"}</Text>
+                        <Text><strong>Focus:</strong> {session.focus || 0}/10</Text>
+                        <Text noOfLines={6}>
+                          <strong>Summary:</strong> {session.summary || "No summary available."}
+                        </Text>
+                      </VStack>
+                    </CardBody>
+                  </Card>
+                ))}
+              </SimpleGrid>
+            </Box>
+          </VStack>
         )}
       </Container>
     </Box>
