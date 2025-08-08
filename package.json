@@ -1,7 +1,16 @@
 {
-  "dependencies": {
-    "@auth0/auth0-react": "^2.4.0",
-    "axios": "^1.11.0",
-    "pdf-parse": "^1.1.1"
+  "name": "zengenius",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "ZenGenius - AI-powered study assistant for PDF summarization and flashcard generation",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "test:setup": "node test-setup.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   }
 }

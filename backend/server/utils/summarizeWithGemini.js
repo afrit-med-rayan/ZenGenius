@@ -35,7 +35,7 @@ export const generateFlashcardsFromText = async (summaryText) => {
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    return response.text(); // we'll parse it in frontend if needed
+    return response.text();
   } catch (error) {
     console.error("Gemini flashcard generation failed:", error);
     throw new Error("Failed to generate flashcards.");

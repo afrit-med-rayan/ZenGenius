@@ -23,10 +23,7 @@ app.use('/api/study-session', studySessionRouter);
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(process.env.MONGO_URI)
 .then(() => {
   console.log('✅ Connected to MongoDB');
   app.listen(PORT, () => {

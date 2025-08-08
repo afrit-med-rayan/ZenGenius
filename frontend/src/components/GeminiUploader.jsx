@@ -21,7 +21,7 @@ import {
   FaExternalLinkAlt,
 } from "react-icons/fa";
 
-// 🔁 Flashcard Component
+
 const FlashCard = ({ question, answer }) => {
   const [flipped, setFlipped] = useState(false);
 
@@ -45,7 +45,7 @@ const FlashCard = ({ question, answer }) => {
   );
 };
 
-// 🔁 Converts Gemini output string into flashcard objects
+
 const parseFlashcards = (raw) => {
   const lines = raw.split("\n").filter((line) => line.trim() !== "");
   const flashcards = [];
@@ -56,7 +56,7 @@ const parseFlashcards = (raw) => {
         question: lines[i].replace("Q:", "").trim(),
         answer: lines[i + 1].replace("A:", "").trim(),
       });
-      i++; // Skip next line since we already used it
+      i++; 
     }
   }
 
