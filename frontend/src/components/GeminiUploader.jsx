@@ -31,74 +31,128 @@ const FlashCard = ({ question, answer }) => {
       onClick={() => setFlipped(!flipped)}
       cursor="pointer"
       bg="white"
-      borderRadius="xl"
+      borderRadius="2xl"
       boxShadow="lg"
-      p={6}
-      minH="140px"
+      minH="220px"
+      maxH="220px"
       textAlign="center"
-      transition="all 0.3s ease"
+      transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1)"
       border="2px solid"
       borderColor={flipped ? "purple.200" : "teal.200"}
       _hover={{ 
         boxShadow: "2xl", 
-        transform: "translateY(-4px)",
+        transform: "translateY(-4px) scale(1.02)",
         borderColor: flipped ? "purple.300" : "teal.300"
       }}
       position="relative"
       overflow="hidden"
-      bg={flipped ? "purple.50" : "teal.50"}
+      display="flex"
+      flexDirection="column"
     >
-      {/* Card indicator */}
+      {/* Card Type Badge */}
+      <Badge
+        position="absolute"
+        top="4"
+        left="4"
+        colorScheme={flipped ? "purple" : "teal"}
+        fontSize="xs"
+        px={3}
+        py={1}
+        borderRadius="full"
+        fontWeight="700"
+        textTransform="uppercase"
+        letterSpacing="wide"
+        zIndex="2"
+      >
+        {flipped ? "Answer" : "Question"}
+      </Badge>
+
+      {/* Card Indicator */}
       <Box
         position="absolute"
-        top="3"
-        right="3"
-        w="10px"
-        h="10px"
+        top="4"
+        right="4"
+        w="12px"
+        h="12px"
         borderRadius="full"
         bg={flipped ? "purple.400" : "teal.400"}
-        transition="all 0.3s ease"
+        boxShadow="0 0 10px rgba(0,0,0,0.2)"
+        zIndex="2"
       />
-      
-      {/* Question/Answer content */}
-      <VStack spacing={4} justify="center" h="full">
-        <Badge 
-          colorScheme={flipped ? "purple" : "teal"}
-          fontSize="xs"
-          px={3}
-          py={1}
-          borderRadius="full"
-          textTransform="uppercase"
-          letterSpacing="wide"
-        >
-          {flipped ? "Answer" : "Question"}
-        </Badge>
-        
+
+      {/* Main Content */}
+      <Box 
+        flex="1" 
+        display="flex" 
+        alignItems="center" 
+        justifyContent="center"
+        p={6}
+        pt={12}
+        pb={10}
+      >
         <Text 
-          fontWeight="semibold" 
+          fontWeight="600" 
           color="gray.800"
-          fontSize="sm"
+          fontSize={{ base: "sm", md: "md" }}
           lineHeight="1.5"
-          opacity={flipped ? 1 : 1}
-          transition="opacity 0.2s ease"
+          textAlign="center"
+          overflow="hidden"
+          wordBreak="break-word"
+          display="-webkit-box"
+          css={{
+            WebkitLineClamp: flipped ? 6 : 5,
+            WebkitBoxOrient: "vertical",
+          }}
         >
           {flipped ? answer : question}
         </Text>
-      </VStack>
-      
-      {/* Click hint */}
-      <Text 
+      </Box>
+
+      {/* Click Hint */}
+      <HStack
+        justify="center"
+        spacing={2}
         position="absolute"
         bottom="3"
         left="50%"
         transform="translateX(-50%)"
-        fontSize="xs"
-        color="gray.500"
-        fontStyle="italic"
-        opacity="0.7"
+        opacity="0.6"
+        zIndex="2"
       >
-        Click to {flipped ? "show question" : "reveal answer"}
-      </Text>
+        <Box
+          w="4px"
+          h="4px"
+          borderRadius="full"
+          bg={flipped ? "purple.300" : "teal.300"}
+        />
+        <Text 
+          fontSize="xs"
+          color="gray.500"
+          fontWeight="500"
+        >
+          Click to {flipped ? "see question" : "reveal answer"}
+        </Text>
+        <Box
+          w="4px"
+          h="4px"
+          borderRadius="full"
+          bg={flipped ? "purple.300" : "teal.300"}
+        />
+      </HStack>
+
+      {/* Background Gradient */}
+      <Box
+        position="absolute"
+        top="0"
+        left="0"
+        right="0"
+        bottom="0"
+        bgGradient={flipped ? "linear(to-br, purple.50, purple.100)" : "linear(to-br, teal.50, teal.100)"}
+        opacity="0.3"
+        transition="all 0.4s ease"
+        pointerEvents="none"
+        zIndex="1"
+      />
     </Box>
   );
 };
@@ -192,14 +246,25 @@ const GeminiUploader = () => {
         cursor="pointer"
         onDrop={(e) => {
           e.preventDefault();
+          e.stopPropagation();
           const droppedFile = e.dataTransfer.files[0];
           if (droppedFile && droppedFile.type === "application/pdf") {
             setFile(droppedFile);
             setResponse(null);
           }
         }}
-        onDragOver={(e) => e.preventDefault()}
-        onDragEnter={(e) => e.preventDefault()}
+        onDragOver={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+        onDragEnter={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+        onDragLeave={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
       >
         <VStack spacing={6}>
           <Box
@@ -245,19 +310,21 @@ const GeminiUploader = () => {
           </VStack>
 
           <HStack spacing={4}>
-            <Input
-              type="file"
-              accept=".pdf"
-              onChange={handleFileChange}
-              position="absolute"
-              top="0"
-              left="0"
-              width="100%"
-              height="100%"
-              opacity="0"
-              cursor="pointer"
-              zIndex="1"
-            />
+            {!file && (
+              <Input
+                type="file"
+                accept=".pdf"
+                onChange={handleFileChange}
+                position="absolute"
+                top="0"
+                left="0"
+                width="100%"
+                height="100%"
+                opacity="0"
+                cursor="pointer"
+                zIndex="2"
+              />
+            )}
             
             {!file && (
               <Button
